@@ -1,0 +1,518 @@
+{% extends "base.html" %}
+
+{% block title %}{% if user %}Редактировать пользователя{% else %}Создать пользователя{% endif %} | Админ-панель{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 30px auto;
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, #ff80ab 0%, #ff4081 100%);
+        color: white;
+        padding: 30px;
+        border-radius: var(--radius) var(--radius) 0 0;
+        box-shadow: var(--shadow);
+    }
+    
+    .form-header h1 {
+        font-size: 28px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .form-header p {
+        font-size: 16px;
+        opacity: 0.9;
+    }
+
+    .form-body {
+        background: white;
+        padding: 40px;
+        border-radius: 0 0 var(--radius) var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid rgba(255, 64, 129, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #ff4081;
+        font-weight: 600;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .form-input {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #ffb6e6;
+        border-radius: var(--radius-sm);
+        font-size: 16px;
+        transition: var(--transition);
+        background: white;
+    }
+    
+    .form-input:focus {
+        outline: none;
+        border-color: #ff4081;
+        box-shadow: 0 0 0 3px rgba(255, 64, 129, 0.1);
+    }
+    
+    .form-input.error {
+        border-color: #f44336;
+        background: linear-gradient(135deg, rgba(244, 67, 54, 0.05), rgba(244, 67, 54, 0.02));
+    }
+    
+    .form-text {
+        margin-top: 8px;
+        font-size: 13px;
+        color: var(--gray-dark);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .form-text.error {
+        color: #f44336;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 20px;
+        background: linear-gradient(135deg, rgba(255, 182, 230, 0.1), rgba(255, 128, 171, 0.05));
+        border-radius: var(--radius-sm);
+        border: 1px solid #ffb6e6;
+    }
+    
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 15px;
+    }
+    
+    .checkbox-label input {
+        width: 20px;
+        height: 20px;
+        accent-color: #ff4081;
+        cursor: pointer;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #ffe6f2;
+    }
+    
+    .btn-form {
+        flex: 1;
+        padding: 16px;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        font-size: 16px;
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #ff80ab, #ff4081);
+        color: white;
+        box-shadow: var(--shadow);
+    }
+    
+    .btn-submit:hover {
+        background: linear-gradient(135deg, #ff4081, #e91e63);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .btn-cancel {
+        background: white;
+        color: #ff4081;
+        border: 2px solid #ffb6e6;
+    }
+    
+    .btn-cancel:hover {
+        background: #fff0f8;
+        transform: translateY(-3px);
+        box-shadow: var(--shadow);
+    }
+
+    .password-info {
+        background: linear-gradient(135deg, rgba(255, 182, 230, 0.1), rgba(255, 128, 171, 0.05));
+        border-radius: var(--radius-sm);
+        padding: 20px;
+        margin-top: 15px;
+        border: 1px solid #ffb6e6;
+    }
+    
+    .password-info h4 {
+        color: #ff4081;
+        margin-bottom: 10px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .password-rules {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .password-rules li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        font-size: 13px;
+        color: var(--gray-dark);
+    }
+    
+    .password-rules li i {
+        color: #4caf50;
+        font-size: 12px;
+    }
+
+    @media (max-width: 768px) {
+        .form-container {
+            margin: 15px auto;
+        }
+        
+        .form-body {
+            padding: 25px;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .form-header {
+            padding: 20px;
+        }
+        
+        .form-header h1 {
+            font-size: 24px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>
+            <i class="fas {% if user %}fa-user-edit{% else %}fa-user-plus{% endif %}"></i>
+            {% if user %}Редактировать пользователя{% else %}Создать пользователя{% endif %}
+        </h1>
+        <p>
+            {% if user %}
+                Редактирование информации о пользователе {{ user.name if user.name else '' }}
+            {% else %}
+                Добавление нового пользователя в систему
+            {% endif %}
+        </p>
+    </div>
+    
+    <div class="form-body">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category in ['success', 'warning', 'danger', 'info'] else 'info' }}" 
+                         style="margin-bottom: 25px;">
+                        <div class="alert-icon">
+                            {% if category == 'success' %}
+                                <i class="fas fa-check-circle"></i>
+                            {% elif category == 'warning' %}
+                                <i class="fas fa-exclamation-triangle"></i>
+                            {% elif category == 'danger' %}
+                                <i class="fas fa-times-circle"></i>
+                            {% else %}
+                                <i class="fas fa-info-circle"></i>
+                            {% endif %}
+                        </div>
+                        <div>{{ message }}</div>
+                        <button class="close-alert" onclick="this.parentElement.style.display='none'">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" 
+              action="{% if user %}{{ url_for('edit_user', user_id=user.id) }}{% else %}{{ url_for('register') }}{% endif %}" 
+              id="userForm">
+            
+            <div class="form-group">
+                <label for="name" class="form-label">
+                    <i class="fas fa-user"></i> ФИО
+                </label>
+                <input type="text" 
+                       id="name" 
+                       name="name" 
+                       class="form-input {% if errors and errors.name %}error{% endif %}" 
+                       placeholder="Введите полное имя пользователя" 
+                       value="{% if user %}{{ user.name }}{% elif name is defined %}{{ name }}{% endif %}" 
+                       required>
+                {% if errors and errors.name %}
+                    <div class="form-text error">
+                        <i class="fas fa-exclamation-circle"></i> {{ errors.name }}
+                    </div>
+                {% else %}
+                    <div class="form-text">
+                        <i class="fas fa-info-circle"></i> Полное имя сотрудника
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="username" class="form-label">
+                    <i class="fas fa-at"></i> Логин
+                </label>
+                <input type="text" 
+                       id="username" 
+                       name="username" 
+                       class="form-input {% if errors and errors.username %}error{% endif %}" 
+                       placeholder="Введите уникальный логин" 
+                       value="{% if user %}{{ user.username }}{% elif username is defined %}{{ username }}{% endif %}" 
+                       required>
+                {% if errors and errors.username %}
+                    <div class="form-text error">
+                        <i class="fas fa-exclamation-circle"></i> {{ errors.username }}
+                    </div>
+                {% else %}
+                    <div class="form-text">
+                        <i class="fas fa-info-circle"></i> Только латинские буквы, цифры и символы _.-
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">
+                    <i class="fas fa-lock"></i> Пароль
+                </label>
+                <input type="password" 
+                       id="password" 
+                       name="password" 
+                       class="form-input {% if errors and errors.password %}error{% endif %}" 
+                       placeholder="{% if user %}Оставьте пустым, если не хотите менять пароль{% else %}Введите пароль{% endif %}" 
+                       {% if not user %}required{% endif %}>
+                {% if errors and errors.password %}
+                    <div class="form-text error">
+                        <i class="fas fa-exclamation-circle"></i> {{ errors.password }}
+                    </div>
+                {% endif %}
+                
+                {% if not user %}
+                <div class="password-info">
+                    <h4><i class="fas fa-shield-alt"></i> Требования к паролю:</h4>
+                    <ul class="password-rules">
+                        <li id="rule-length"><i class="fas fa-circle"></i> Минимум 6 символов</li>
+                        <li id="rule-chars"><i class="fas fa-circle"></i> Только допустимые символы</li>
+                        <li id="rule-match"><i class="fas fa-circle"></i> Подтверждение совпадает</li>
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            
+            {% if not user %}
+            <div class="form-group">
+                <label for="confirm_password" class="form-label">
+                    <i class="fas fa-lock"></i> Подтверждение пароля
+                </label>
+                <input type="password" 
+                       id="confirm_password" 
+                       name="confirm_password" 
+                       class="form-input" 
+                       placeholder="Повторите пароль" 
+                       required>
+                <div class="form-text">
+                    <i class="fas fa-info-circle"></i> Пароли должны совпадать
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if user %}
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" 
+                           id="is_admin" 
+                           name="is_admin" 
+                           {% if user and user.is_admin %}checked{% endif %}>
+                    <i class="fas fa-crown"></i> Администратор
+                </label>
+                <div style="font-size: 13px; color: var(--gray-dark);">
+                    Администраторы имеют доступ ко всем функциям системы
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-form btn-submit">
+                    <i class="fas {% if user %}fa-save{% else %}fa-check{% endif %}"></i>
+                    {% if user %}Сохранить изменения{% else %}Создать пользователя{% endif %}
+                </button>
+                <a href="{{ url_for('admin_users') if user else url_for('admin_users') }}" class="btn-form btn-cancel">
+                    <i class="fas fa-times"></i> Отмена
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('userForm');
+        const passwordInput = document.getElementById('password');
+        const confirmInput = document.getElementById('confirm_password');
+        
+        {% if not user %}
+        function validatePassword() {
+            const password = passwordInput ? passwordInput.value : '';
+            const confirm = confirmInput ? confirmInput.value : '';
+
+            const ruleLength = document.getElementById('rule-length');
+            if (ruleLength && password.length >= 6) {
+                ruleLength.querySelector('i').style.color = '#4caf50';
+                ruleLength.style.color = '#2e7d32';
+            } else if (ruleLength) {
+                ruleLength.querySelector('i').style.color = '#ccc';
+                ruleLength.style.color = 'var(--gray-dark)';
+            }
+
+            const ruleChars = document.getElementById('rule-chars');
+            const validChars = /^[a-zA-Z0-9@#$%^&+=!_.-]*$/;
+            if (ruleChars && validChars.test(password)) {
+                ruleChars.querySelector('i').style.color = '#4caf50';
+                ruleChars.style.color = '#2e7d32';
+            } else if (ruleChars) {
+                ruleChars.querySelector('i').style.color = '#ccc';
+                ruleChars.style.color = 'var(--gray-dark)';
+            }
+
+            if (confirmInput && ruleMatch) {
+                const ruleMatch = document.getElementById('rule-match');
+                if (password === confirm && password.length >= 6) {
+                    ruleMatch.querySelector('i').style.color = '#4caf50';
+                    ruleMatch.style.color = '#2e7d32';
+                } else if (ruleMatch) {
+                    ruleMatch.querySelector('i').style.color = '#ccc';
+                    ruleMatch.style.color = 'var(--gray-dark)';
+                }
+            }
+        }
+        
+        if (passwordInput) {
+            passwordInput.addEventListener('input', validatePassword);
+        }
+        
+        if (confirmInput) {
+            confirmInput.addEventListener('input', validatePassword);
+        }
+        {% endif %}
+
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            const nameInput = document.getElementById('name');
+            const usernameInput = document.getElementById('username');
+
+            if (nameInput && !nameInput.value.trim()) {
+                showError('Имя обязательно для заполнения', nameInput);
+                isValid = false;
+            }
+
+            if (usernameInput && !usernameInput.value.trim()) {
+                showError('Логин обязателен для заполнения', usernameInput);
+                isValid = false;
+            }
+            
+            {% if not user %}
+            if (passwordInput && passwordInput.value.length < 6) {
+                showError('Пароль должен содержать минимум 6 символов', passwordInput);
+                isValid = false;
+            }
+            
+            if (passwordInput) {
+                const validChars = /^[a-zA-Z0-9@#$%^&+=!_.-]+$/;
+                if (!validChars.test(passwordInput.value)) {
+                    showError('Пароль содержит недопустимые символы', passwordInput);
+                    isValid = false;
+                }
+            }
+            
+            if (passwordInput && confirmInput && passwordInput.value !== confirmInput.value) {
+                showError('Пароли не совпадают', confirmInput);
+                isValid = false;
+            }
+            {% endif %}
+            
+            if (!isValid) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        function showError(message, input) {
+            if (!input) return;
+            
+            const existingError = input.parentNode.querySelector('.form-text.error');
+            if (existingError) {
+                existingError.remove();
+            }
+
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'form-text error';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            
+            input.classList.add('error');
+            input.parentNode.appendChild(errorDiv);
+
+            input.focus();
+
+            setTimeout(() => {
+                errorDiv.style.opacity = '0';
+                errorDiv.style.transition = 'opacity 0.5s';
+                setTimeout(() => {
+                    if (errorDiv.parentNode) {
+                        errorDiv.remove();
+                        input.classList.remove('error');
+                    }
+                }, 500);
+            }, 5000);
+        }
+
+        const firstInput = document.querySelector('.form-input');
+        if (firstInput) {
+            firstInput.focus();
+        }
+    });
+</script>
+{% endblock %}

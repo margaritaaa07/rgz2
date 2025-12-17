@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Тест</title>
+    <style>
+        body { font-family: Arial; padding: 50px; }
+        h1 { color: green; }
+        .info { background: #f0f0f0; padding: 20px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>✅ Шаблон работает!</h1>
+    <div class="info">
+        <p>Время: {{ now }}</p>
+        <p>Путь: {{ request.path }}</p>
+        <p>Студент: {{ student_name }}</p>
+        <p>Группа: {{ group_name }}</p>
+    </div>
+    <a href="/">На главную</a>
+</body>
+</html>

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+     <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+
+    <title>{% block title %}Планировщик отпусков{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #ff66b2;
+            --secondary-color: #ff99cc;
+            --light-pink: #ffb6e6;
+            --dark-pink: #ff3399;
+            --accent-color: #ff99ff;
+            --light-purple: #cc66ff;
+            --success-color: #99ffcc;
+            --warning-color: #ffcc99;
+            --danger-color: #ff9999;
+            --light-bg: #fff0f8;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 4px 12px rgba(255, 102, 178, 0.1);
+            --shadow-lg: 0 8px 24px rgba(255, 102, 178, 0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff8fb;
+            color: #555;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+        }
+        
+        .navbar {
+            background: white;
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: #777 !important;
+            transition: var(--transition);
+            padding: 0.5rem 1rem !important;
+            border-radius: var(--radius-sm);
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color) !important;
+            background: var(--light-bg);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-pink));
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+        }
+        
+        .btn-outline-primary:hover {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            border-color: var(--primary-color);
+            color: white;
+        }
+        
+        .card {
+            border: none;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            border-radius: var(--radius) var(--radius) 0 0 !important;
+            padding: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .alert {
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, rgba(153, 255, 204, 0.1), rgba(102, 255, 178, 0.05));
+            color: #006633;
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .alert-error, .alert-danger {
+            background: linear-gradient(135deg, rgba(255, 153, 153, 0.1), rgba(255, 102, 102, 0.05));
+            color: #cc0000;
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .alert-info {
+            background: linear-gradient(135deg, rgba(255, 153, 204, 0.1), rgba(255, 102, 178, 0.05));
+            color: #cc0066;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .alert-warning {
+            background: linear-gradient(135deg, rgba(255, 204, 153, 0.1), rgba(255, 153, 102, 0.05));
+            color: #cc6600;
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .footer {
+            background: white;
+            margin-top: auto;
+            padding: 2rem 0;
+            border-top: 1px solid #ffe6f7;
+            text-align: center;
+            color: #888;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            padding: 4rem 0;
+            border-radius: var(--radius);
+            margin-bottom: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='white' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-top: 4px solid var(--primary-color);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 auto 1rem;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+        
+        .stat-label {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .form-control {
+            border: 2px solid #ffe6f7;
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 102, 178, 0.1);
+        }
+        
+        .badge {
+            padding: 0.5rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .badge-admin {
+            background: linear-gradient(135deg, rgba(255, 102, 178, 0.1), rgba(255, 153, 204, 0.05));
+            color: var(--primary-color);
+            border: 1px solid rgba(255, 102, 178, 0.3);
+        }
+        
+        .badge-user {
+            background: linear-gradient(135deg, rgba(255, 153, 204, 0.1), rgba(255, 102, 178, 0.05));
+            color: var(--primary-color);
+            border: 1px solid rgba(255, 153, 204, 0.3);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .week-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 2px solid #ffe6f7;
+            transition: var(--transition);
+        }
+        
+        .week-card.occupied {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(255, 153, 204, 0.05), white);
+        }
+        
+        .week-card.user-vacation {
+            border-color: var(--success-color);
+            background: linear-gradient(135deg, rgba(153, 255, 204, 0.05), white);
+        }
+        
+        .week-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #66ffb2);
+            border: none;
+            color: #006633;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color), #ffcc66);
+            border: none;
+            color: #663300;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), #ff6666);
+            border: none;
+            color: white;
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, var(--accent-color), var(--light-purple));
+            border: none;
+            color: #6600cc;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .stat-value {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+        
+        .cursor-pointer {
+            cursor: pointer;
+        }
+        
+        .text-pink {
+            color: var(--primary-color);
+        }
+        
+        .bg-light-pink {
+            background-color: var(--light-bg);
+        }
+        
+        .border-pink {
+            border-color: var(--primary-color) !important;
+        }
+        
+        .table {
+            --bs-table-bg: transparent;
+            --bs-table-striped-bg: rgba(255, 182, 230, 0.05);
+            --bs-table-hover-bg: rgba(255, 102, 178, 0.1);
+        }
+        
+        .table th {
+            color: var(--primary-color);
+            border-bottom: 2px solid #ffe6f7;
+        }
+        
+        .table td {
+            border-color: #ffe6f7;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+        }
+        
+        .modal-footer .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-umbrella-beach me-2"></i>Vacation Sync
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'calendar' %}active{% endif %}" 
+                               href="{{ url_for('calendar') }}">
+                                <i class="fas fa-calendar-alt me-1"></i> Календарь
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'profile' %}active{% endif %}" 
+                               href="{{ url_for('profile') }}">
+                                <i class="fas fa-user me-1"></i> Профиль
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'all_employees' %}active{% endif %}" 
+                               href="{{ url_for('all_employees') }}">
+                                <i class="fas fa-users me-1"></i> Сотрудники
+                            </a>
+                        </li>
+                        
+                        {% if current_user.is_admin %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-crown me-1"></i> Админ
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">
+                                            <i class="fas fa-tachometer-alt me-2"></i> Панель
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('admin_users') }}">
+                                            <i class="fas fa-users-cog me-2"></i> Пользователи
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('admin_vacations') }}">
+                                            <i class="fas fa-calendar-times me-2"></i> Отпуска
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('admin_create_vacation') }}">
+                                            <i class="fas fa-calendar-plus me-2"></i> Создать отпуск
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('admin_statistics') }}">
+                                            <i class="fas fa-chart-bar me-2"></i> Статистика
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">
+                                <i class="fas fa-sign-out-alt me-1"></i> Выйти
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item ms-2">
+                            <div class="d-flex align-items-center">
+                                <div class="user-avatar me-2">
+                                    {{ current_user.name[0] if current_user.name else 'U' }}
+                                </div>
+                                <span class="fw-medium text-dark">{{ current_user.name }}</span>
+                            </div>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'login' %}active{% endif %}" 
+                               href="{{ url_for('login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i> Вход
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'register' %}active{% endif %}" 
+                               href="{{ url_for('register') }}">
+                                <i class="fas fa-user-plus me-1"></i> Регистрация
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {% if category == 'success' %}
+                            <i class="fas fa-check-circle me-2"></i>
+                        {% elif category in ['error', 'danger'] %}
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                        {% elif category == 'warning' %}
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                        {% elif category == 'info' %}
+                            <i class="fas fa-info-circle me-2"></i>
+                        {% endif %}
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <main class="container my-4 flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">
+                <i class="fas fa-heart text-danger me-1"></i>
+               Бережная Маргарита Валерьевна ФБИ-33. © {{ now.year }} Планировщик отпусков. 
+            </p>
+            <p class="mt-2 text-muted small">
+                Система синхронизации отпусков сотрудников
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

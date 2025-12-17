@@ -1,0 +1,542 @@
+{% extends "base.html" %}
+
+{% block title %}Создать отпуск | Админ-панель{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 30px auto;
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, #ff99cc 0%, #ff66b2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: var(--radius) var(--radius) 0 0;
+        box-shadow: var(--shadow);
+    }
+    
+    .form-header h1 {
+        font-size: 28px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .form-header p {
+        font-size: 16px;
+        opacity: 0.9;
+    }
+
+    .form-body {
+        background: white;
+        padding: 40px;
+        border-radius: 0 0 var(--radius) var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid rgba(255, 153, 204, 0.2);
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 10px;
+        color: #ff66b2;
+        font-weight: 600;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .form-input, .form-select {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #ffb6e6;
+        border-radius: var(--radius-sm);
+        font-size: 16px;
+        transition: var(--transition);
+        background: white;
+    }
+    
+    .form-input:focus, .form-select:focus {
+        outline: none;
+        border-color: #ff66b2;
+        box-shadow: 0 0 0 3px rgba(255, 102, 178, 0.1);
+    }
+    
+    .form-input.error, .form-select.error {
+        border-color: #ff9999;
+        background: linear-gradient(135deg, rgba(255, 153, 153, 0.05), rgba(255, 102, 102, 0.02));
+    }
+    
+    .form-text {
+        margin-top: 8px;
+        font-size: 13px;
+        color: #888;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .form-text.error {
+        color: #ff6666;
+    }
+
+    .date-preview {
+        background: linear-gradient(135deg, rgba(255, 182, 230, 0.1), rgba(255, 153, 204, 0.05));
+        border-radius: var(--radius-sm);
+        padding: 20px;
+        margin-top: 15px;
+        border: 1px solid #ffb6e6;
+        text-align: center;
+    }
+    
+    .date-preview h4 {
+        color: #ff66b2;
+        margin-bottom: 10px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .dates-display {
+        font-size: 18px;
+        font-weight: 600;
+        color: #ff3399;
+        padding: 10px;
+        background: white;
+        border-radius: 8px;
+        border: 2px solid #ffe6f7;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #fff0f8;
+    }
+    
+    .btn-form {
+        flex: 1;
+        padding: 16px;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        font-size: 16px;
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #ff99cc, #ff66b2);
+        color: white;
+        box-shadow: var(--shadow);
+    }
+    
+    .btn-submit:hover {
+        background: linear-gradient(135deg, #ff66b2, #ff3399);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .btn-cancel {
+        background: white;
+        color: #ff66b2;
+        border: 2px solid #ffb6e6;
+    }
+    
+    .btn-cancel:hover {
+        background: #fff0f8;
+        transform: translateY(-3px);
+        box-shadow: var(--shadow);
+    }
+
+    .selection-info {
+        background: linear-gradient(135deg, rgba(255, 204, 153, 0.1), rgba(255, 153, 102, 0.05));
+        border-radius: var(--radius-sm);
+        padding: 20px;
+        margin-top: 25px;
+        border: 1px solid #ffcc99;
+    }
+    
+    .selection-info h4 {
+        color: #ff9966;
+        margin-bottom: 10px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .selection-rules {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .selection-rules li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        font-size: 13px;
+        color: #ff9966;
+    }
+    
+    .selection-rules li i {
+        font-size: 12px;
+    }
+
+    .week-selector {
+        display: grid;
+        grid-template-columns: repeat(13, 1fr);
+        gap: 8px;
+        margin-top: 10px;
+    }
+    
+    .week-option {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #ffb6e6;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition);
+        background: white;
+        color: #ff66b2;
+    }
+    
+    .week-option:hover {
+        background: #fff0f8;
+        transform: translateY(-2px);
+    }
+    
+    .week-option.selected {
+        background: linear-gradient(135deg, #ff99cc, #ff66b2);
+        color: white;
+        border-color: #ff66b2;
+    }
+    
+    .week-option.unavailable {
+        background: #ffe6f7;
+        color: #ffb6e6;
+        cursor: not-allowed;
+        text-decoration: line-through;
+    }
+
+    @media (max-width: 768px) {
+        .form-container {
+            margin: 15px auto;
+        }
+        
+        .form-body {
+            padding: 25px;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .form-header {
+            padding: 20px;
+        }
+        
+        .form-header h1 {
+            font-size: 24px;
+        }
+        
+        .week-selector {
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+        
+        .week-option {
+            width: 36px;
+            height: 36px;
+            font-size: 14px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .week-selector {
+            grid-template-columns: repeat(5, 1fr);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>
+            <i class="fas fa-calendar-plus"></i>
+            Создать отпуск
+        </h1>
+        <p>
+            Добавление нового отпуска для сотрудника
+        </p>
+    </div>
+    
+    <div class="form-body">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category in ['success', 'warning', 'danger', 'info'] else 'info' }}" 
+                         style="margin-bottom: 25px;">
+                        <div class="alert-icon">
+                            {% if category == 'success' %}
+                                <i class="fas fa-check-circle"></i>
+                            {% elif category == 'warning' %}
+                                <i class="fas fa-exclamation-triangle"></i>
+                            {% elif category == 'danger' %}
+                                <i class="fas fa-times-circle"></i>
+                            {% else %}
+                                <i class="fas fa-info-circle"></i>
+                            {% endif %}
+                        </div>
+                        <div>{{ message }}</div>
+                        <button class="close-alert" onclick="this.parentElement.style.display='none'">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" action="{{ url_for('admin_create_vacation') }}" id="vacationForm">
+            
+            <div class="form-group">
+                <label for="user_id" class="form-label">
+                    <i class="fas fa-user"></i> Сотрудник
+                </label>
+                <select id="user_id" 
+                        name="user_id" 
+                        class="form-select {% if errors and errors.user_id %}error{% endif %}" 
+                        required>
+                    <option value="">Выберите сотрудника</option>
+                    {% for user in users %}
+                        <option value="{{ user.id }}" 
+                                {% if user_id and user_id|int == user.id %}selected{% endif %}>
+                            {{ user.name }} {% if user.is_admin %}(Админ){% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+                {% if errors and errors.user_id %}
+                    <div class="form-text error">
+                        <i class="fas fa-exclamation-circle"></i> {{ errors.user_id }}
+                    </div>
+                {% else %}
+                    <div class="form-text">
+                        <i class="fas fa-info-circle"></i> Выберите сотрудника для отпуска
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="year" class="form-label">
+                    <i class="fas fa-calendar-alt"></i> Год
+                </label>
+                <input type="number" 
+                       id="year" 
+                       name="year" 
+                       class="form-input {% if errors and errors.year %}error{% endif %}" 
+                       placeholder="Введите год (например, 2025)" 
+                       value="{% if year %}{{ year }}{% else %}{{ now.year }}{% endif %}" 
+                       min="2000" 
+                       max="2100" 
+                       required>
+                {% if errors and errors.year %}
+                    <div class="form-text error">
+                        <i class="fas fa-exclamation-circle"></i> {{ errors.year }}
+                    </div>
+                {% else %}
+                    <div class="form-text">
+                        <i class="fas fa-info-circle"></i> Год, в который планируется отпуск
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="week_number" class="form-label">
+                    <i class="fas fa-calendar-week"></i> Номер недели
+                </label>
+                <input type="number" 
+                       id="week_number" 
+                       name="week_number" 
+                       class="form-input {% if errors and errors.week_number %}error{% endif %}" 
+                       placeholder="Введите номер недели (1-53)" 
+                       value="{{ week_number if week_number else '' }}" 
+                       min="1" 
+                       max="53" 
+                       required>
+                {% if errors and errors.week_number %}
+                    <div class="form-text error">
+                        <i class="fas fa-exclamation-circle"></i> {{ errors.week_number }}
+                    </div>
+                {% else %}
+                    <div class="form-text">
+                        <i class="fas fa-info-circle"></i> Номер недели в году (1-53)
+                    </div>
+                {% endif %}
+
+                <div class="date-preview" id="datePreview" style="display: none;">
+                    <h4><i class="fas fa-eye"></i> Предпросмотр дат</h4>
+                    <div class="dates-display" id="datesDisplay"></div>
+                </div>
+            </div>
+            
+            <div class="selection-info">
+                <h4><i class="fas fa-info-circle"></i> Правила выбора отпуска</h4>
+                <ul class="selection-rules">
+                    <li><i class="fas fa-check-circle"></i> Неделя не должна быть уже занята другим сотрудником</li>
+                    <li><i class="fas fa-check-circle"></i> Сотрудник может иметь максимум 4 недели отпуска в год</li>
+                    <li><i class="fas fa-check-circle"></i> Редактирование прошлых лет недоступно</li>
+                </ul>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-form btn-submit">
+                    <i class="fas fa-check"></i> Создать отпуск
+                </button>
+                <a href="{{ url_for('admin_vacations') }}" class="btn-form btn-cancel">
+                    <i class="fas fa-times"></i> Отмена
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('vacationForm');
+        const yearInput = document.getElementById('year');
+        const weekInput = document.getElementById('week_number');
+        const datePreview = document.getElementById('datePreview');
+        const datesDisplay = document.getElementById('datesDisplay');
+
+        function calculateWeekDates(year, week) {
+            const firstDay = new Date(year, 0, 1 + (week - 1) * 7);
+            const dayOfWeek = firstDay.getDay();
+            const startDate = new Date(firstDay);
+            startDate.setDate(firstDay.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+            
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 6);
+            
+            return { start: startDate, end: endDate };
+        }
+
+        function formatDate(date) {
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+
+        function updateDatePreview() {
+            const year = parseInt(yearInput.value);
+            const week = parseInt(weekInput.value);
+            
+            if (year && week && week >= 1 && week <= 53) {
+                const dates = calculateWeekDates(year, week);
+                datesDisplay.textContent = `${formatDate(dates.start)} - ${formatDate(dates.end)}`;
+                datePreview.style.display = 'block';
+            } else {
+                datePreview.style.display = 'none';
+            }
+        }
+
+        yearInput.addEventListener('input', updateDatePreview);
+        weekInput.addEventListener('input', updateDatePreview);
+
+        if (yearInput.value && weekInput.value) {
+            updateDatePreview();
+        }
+
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            const year = parseInt(yearInput.value);
+            const week = parseInt(weekInput.value);
+            const currentYear = new Date().getFullYear();
+
+            if (!year || year < 2000 || year > 2100) {
+                showError('Год должен быть от 2000 до 2100', yearInput);
+                isValid = false;
+            }
+
+            if (!week || week < 1 || week > 53) {
+                showError('Номер недели должен быть от 1 до 53', weekInput);
+                isValid = false;
+            } else if (year) {
+                const lastDay = new Date(year, 11, 31);
+                const lastWeek = getWeekNumber(lastDay);
+                if (week > lastWeek) {
+                    showError(`В ${year} году всего ${lastWeek} недель`, weekInput);
+                    isValid = false;
+                }
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        function getWeekNumber(date) {
+            const firstDay = new Date(date.getFullYear(), 0, 1);
+            const pastDays = (date - firstDay) / 86400000;
+            return Math.ceil((pastDays + firstDay.getDay() + 1) / 7);
+        }
+        
+        function showError(message, input) {
+            const existingError = input.parentNode.querySelector('.form-text.error');
+            if (existingError) {
+                existingError.remove();
+            }
+
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'form-text error';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            
+            input.classList.add('error');
+            input.parentNode.appendChild(errorDiv);
+
+            input.focus();
+
+            setTimeout(() => {
+                errorDiv.style.opacity = '0';
+                errorDiv.style.transition = 'opacity 0.5s';
+                setTimeout(() => {
+                    if (errorDiv.parentNode) {
+                        errorDiv.remove();
+                        input.classList.remove('error');
+                    }
+                }, 500);
+            }, 5000);
+        }
+
+        const firstInput = document.querySelector('.form-input, .form-select');
+        if (firstInput) {
+            firstInput.focus();
+        }
+    });
+</script>
+{% endblock %}

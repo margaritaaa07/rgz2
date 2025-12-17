@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Главная | Планировщик отпусков{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Планировщик отпусков</h1>
+        <p class="hero-subtitle">Синхронизируйте отпуска сотрудников. Никто не уходит одновременно!</p>
+        
+        {% if not current_user.is_authenticated %}
+            <div class="mt-4">
+                <a href="{{ url_for('register') }}" class="btn btn-light btn-lg me-3">
+                    <i class="fas fa-user-plus me-2"></i> Регистрация
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i> Вход
+                </a>
+            </div>
+        {% else %}
+            <div class="mt-4">
+                <a href="{{ url_for('calendar') }}" class="btn btn-light btn-lg">
+                    <i class="fas fa-calendar-alt me-2"></i> Перейти к календарю
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container">
+    <div class="row text-center mb-5">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value">100+</div>
+                <div class="stat-label">Сотрудников в системе</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-umbrella-beach"></i>
+                </div>
+                <div class="stat-value">4</div>
+                <div class="stat-label">Недели отпуска на сотрудника</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-value">0</div>
+                <div class="stat-label">Конфликтов отпусков</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-bullseye me-2"></i> Основные возможности
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Выбор недель отпуска</strong> - каждый сотрудник выбирает 4 недели в году
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Предотвращение конфликтов</strong> - система не позволит двум сотрудникам выбрать одну неделю
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Просмотр занятости</strong> - видно, кто уже занял конкретную неделю
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Гибкое планирование</strong> - можно выбирать любой год и недели
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Администрирование</strong> - управление пользователями и отпусками
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle me-2"></i> Как это работает
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5 class="text-pink"><i class="fas fa-user-plus me-2"></i> 1. Регистрация</h5>
+                        <p class="text-muted">Создайте аккаунт с именем, логином и паролем.</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5 class="text-pink"><i class="fas fa-calendar-alt me-2"></i> 2. Выбор отпуска</h5>
+                        <p class="text-muted">Перейдите в календарь и выберите 4 свободные недели для отпуска.</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5 class="text-pink"><i class="fas fa-sync-alt me-2"></i> 3. Синхронизация</h5>
+                        <p class="text-muted">Система автоматически предотвращает конфликты с другими сотрудниками.</p>
+                    </div>
+                    
+                    <div>
+                        <h5 class="text-pink"><i class="fas fa-bell me-2"></i> 4. Уведомления</h5>
+                        <p class="text-muted">Получайте напоминания о необходимости выбрать все 4 недели.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if not current_user.is_authenticated %}
+        <div class="text-center mt-5">
+            <h2 class="mb-4">Начните планировать отпуска прямо сейчас!</h2>
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg me-3">
+                <i class="fas fa-rocket me-2"></i> Присоединиться
+            </a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i> Уже есть аккаунт
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

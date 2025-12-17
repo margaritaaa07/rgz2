@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+
+{% block title %}Вход в систему | Vacation Sync{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        max-width: 480px;
+        margin: 3rem auto;
+        animation: fadeIn 0.6s ease-out;
+    }
+    
+    .auth-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+    
+    .auth-header {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        padding: 2rem;
+        text-align: center;
+        color: white;
+    }
+    
+    .auth-header h1 {
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    
+    .auth-header p {
+        opacity: 0.9;
+        font-size: 0.95rem;
+    }
+    
+    .auth-body {
+        padding: 2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+    
+    .input-group {
+        position: relative;
+    }
+    
+    .form-input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid var(--gray-light);
+        border-radius: var(--radius-sm);
+        font-size: 0.95rem;
+        transition: var(--transition);
+        background: white;
+    }
+    
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    .form-input.error {
+        border-color: var(--danger);
+    }
+    
+    .input-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray);
+    }
+    
+    .form-text {
+        margin-top: 0.375rem;
+        font-size: 0.85rem;
+        color: var(--gray);
+    }
+    
+    .remember-forgot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--gray);
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
+    
+    .checkbox-label input {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--primary);
+    }
+    
+    .forgot-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: var(--transition);
+    }
+    
+    .forgot-link:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+    
+    .auth-footer {
+        text-align: center;
+        padding-top: 1.5rem;
+        margin-top: 1.5rem;
+        border-top: 1px solid var(--gray-light);
+    }
+    
+    .auth-footer p {
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+    
+    .auth-footer a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+    
+    .auth-footer a:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+    
+    .security-features {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .security-features h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .security-features ul {
+        list-style: none;
+    }
+    
+    .security-features li {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+    
+    .security-features li i {
+        color: var(--success);
+        font-size: 0.9rem;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .auth-container {
+            margin: 1rem auto;
+        }
+        
+        .auth-body {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Вход в систему</h1>
+            <p>Добро пожаловать в Vacation Sync</p>
+        </div>
+        
+        <div class="auth-body">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category if category in ['success', 'warning', 'danger', 'info'] else 'info' }}" style="margin-bottom: 1.5rem;">
+                            <div class="alert-icon">
+                                {% if category == 'success' %}
+                                    <i class="fas fa-check-circle"></i>
+                                {% elif category == 'warning' %}
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                {% elif category == 'danger' %}
+                                    <i class="fas fa-times-circle"></i>
+                                {% else %}
+                                    <i class="fas fa-info-circle"></i>
+                                {% endif %}
+                            </div>
+                            <div>{{ message }}</div>
+                            <button class="close-alert" onclick="this.parentElement.style.display='none'">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="form-group">
+                    <label for="username" class="form-label">
+                        <i class="fas fa-user"></i> Логин
+                    </label>
+                    <div class="input-group">
+                        <input type="text" 
+                               id="username" 
+                               name="username" 
+                               class="form-input" 
+                               placeholder="Введите ваш логин" 
+                               value="{{ username if username else '' }}" 
+                               required>
+                        <div class="input-icon">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock"></i> Пароль
+                    </label>
+                    <div class="input-group">
+                        <input type="password" 
+                               id="password" 
+                               name="password" 
+                               class="form-input" 
+                               placeholder="Введите ваш пароль" 
+                               required>
+                        <div class="input-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="remember-forgot">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="remember">
+                        <span>Запомнить меня</span>
+                    </label>
+                    <a href="#" class="forgot-link">Забыли пароль?</a>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">
+                    <i class="fas fa-sign-in-alt"></i> Войти в систему
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Нет аккаунта? <a href="{{ url_for('register') }}">Зарегистрироваться</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="security-features">
+        <h3><i class="fas fa-shield-alt"></i> Безопасность системы</h3>
+        <ul>
+            <li><i class="fas fa-check"></i> Защищенное соединение (SSL)</li>
+            <li><i class="fas fa-check"></i> Шифрование паролей</li>
+            <li><i class="fas fa-check"></i> Двухфакторная аутентификация</li>
+            <li><i class="fas fa-check"></i> Контроль доступа по ролям</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const usernameField = document.getElementById('username');
+        if (usernameField && !usernameField.value) {
+            usernameField.focus();
+        }
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            if (password.length < 6) {
+                e.preventDefault();
+                showError('Пароль должен содержать минимум 6 символов');
+                return false;
+            }
+        });
+        
+        function showError(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger';
+            alert.innerHTML = `
+                <div class="alert-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div>${message}</div>
+                <button class="close-alert" onclick="this.parentElement.style.display='none'">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            form.parentNode.insertBefore(alert, form);
+
+            setTimeout(() => {
+                alert.style.opacity = '0';
+                alert.style.transition = 'opacity 0.5s';
+                setTimeout(() => alert.style.display = 'none', 500);
+            }, 5000);
+        }
+    });
+</script>
+{% endblock %}

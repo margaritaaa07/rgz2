@@ -1,0 +1,505 @@
+{% extends "base.html" %}
+
+{% block title %}Управление пользователями | Админ-панель{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #ffb6e6, #ff80d5);
+        color: white;
+        padding: 2rem;
+        border-radius: var(--radius);
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .user-table {
+        background: white;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+    }
+    
+    .user-table th {
+        background: linear-gradient(135deg, #ffb6e6, #ff80d5);
+        color: white;
+        border: none;
+        padding: 1rem;
+        font-weight: 600;
+    }
+    
+    .user-table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-color: #ffe6f7;
+    }
+    
+    .user-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .action-btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .action-btn.edit {
+        background: linear-gradient(135deg, #ff99cc, #ff66b2);
+        color: white;
+    }
+    
+    .action-btn.edit:hover {
+        background: linear-gradient(135deg, #ff66b2, #ff3399);
+        transform: translateY(-2px);
+    }
+    
+    .action-btn.delete {
+        background: linear-gradient(135deg, #ff6666, #ff3366);
+        color: white;
+    }
+    
+    .action-btn.delete:hover {
+        background: linear-gradient(135deg, #ff3366, #ff0066);
+        transform: translateY(-2px);
+    }
+    
+    .action-btn.toggle-admin {
+        background: linear-gradient(135deg, #ff99ff, #cc66ff);
+        color: white;
+    }
+    
+    .action-btn.toggle-admin:hover {
+        background: linear-gradient(135deg, #cc66ff, #9933ff);
+        transform: translateY(-2px);
+    }
+    
+    .search-box {
+        max-width: 400px;
+        margin: 0 auto 2rem;
+    }
+    
+    .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card-admin {
+        background: white;
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: var(--shadow);
+        border-top: 4px solid;
+    }
+    
+    .stat-card-admin.users {
+        border-color: #ff99cc;
+    }
+    
+    .stat-card-admin.admins {
+        border-color: #ff66b2;
+    }
+    
+    .stat-card-admin.active {
+        border-color: #ff99ff;
+    }
+    
+    .stat-card-admin.inactive {
+        border-color: #ffcccc;
+    }
+    
+    .pagination {
+        justify-content: center;
+        margin-top: 2rem;
+    }
+    
+    .page-link {
+        color: #ff66b2;
+        border: 1px solid #ffb6e6;
+    }
+    
+    .page-link:hover {
+        background: #fff0f8;
+        color: #ff3399;
+        border-color: #ff99cc;
+    }
+    
+    .page-item.active .page-link {
+        background: linear-gradient(135deg, #ffb6e6, #ff80d5);
+        border-color: #ff66b2;
+        color: white;
+    }
+    
+    .badge-admin {
+        background: linear-gradient(135deg, #ff99ff, #cc66ff);
+        color: white;
+    }
+    
+    .badge-user {
+        background: linear-gradient(135deg, #ffb6e6, #ff99cc);
+        color: white;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ffb6e6, #ff99cc);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    
+    .btn-outline-primary {
+        color: #ff66b2;
+        border-color: #ff99cc;
+    }
+    
+    .btn-outline-primary:hover {
+        background: linear-gradient(135deg, #ffb6e6, #ff99cc);
+        color: white;
+        border-color: #ff66b2;
+    }
+    
+    .btn-outline-danger {
+        color: #ff3366;
+        border-color: #ff6666;
+    }
+    
+    .btn-outline-danger:hover {
+        background: linear-gradient(135deg, #ff6666, #ff3366);
+        color: white;
+        border-color: #ff0066;
+    }
+    
+    .btn-outline-success {
+        color: #cc66ff;
+        border-color: #ff99ff;
+    }
+    
+    .btn-outline-success:hover {
+        background: linear-gradient(135deg, #ff99ff, #cc66ff);
+        color: white;
+        border-color: #9933ff;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #ff99cc, #ff66b2);
+        border: none;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #ff66b2, #ff3399);
+        transform: translateY(-2px);
+    }
+    
+    .bg-primary {
+        background: linear-gradient(135deg, #ff99cc, #ff66b2) !important;
+    }
+    
+    .bg-info {
+        background: linear-gradient(135deg, #99ccff, #66b2ff) !important;
+    }
+    
+    .bg-success {
+        background: linear-gradient(135deg, #99ffcc, #66ffb2) !important;
+    }
+    
+    .bg-secondary {
+        background: linear-gradient(135deg, #ccccff, #9999ff) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-header">
+        <h1><i class="fas fa-users-cog me-2"></i> Управление пользователями</h1>
+        <p class="mb-0">Всего пользователей в системе: {{ users|length }}</p>
+    </div>
+    
+    <div class="stats-cards">
+        <div class="stat-card-admin users">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #ff99cc, #ff66b2);">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-value">{{ users|length }}</div>
+            <div class="stat-label">Всего пользователей</div>
+        </div>
+        
+        <div class="stat-card-admin admins">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #ff66b2, #ff3399);">
+                <i class="fas fa-crown"></i>
+            </div>
+            {% set admin_count = namespace(count=0) %}
+            {% for user in users %}
+                {% if user.is_admin %}
+                    {% set admin_count.count = admin_count.count + 1 %}
+                {% endif %}
+            {% endfor %}
+            <div class="stat-value">{{ admin_count.count }}</div>
+            <div class="stat-label">Администраторов</div>
+        </div>
+        
+        <div class="stat-card-admin active">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #ff99ff, #cc66ff);">
+                <i class="fas fa-user-check"></i>
+            </div>
+            <div class="stat-value">{{ users|length }}</div>
+            <div class="stat-label">Активных</div>
+        </div>
+        
+        <div class="stat-card-admin inactive">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #ffcccc, #ff9999);">
+                <i class="fas fa-user-times"></i>
+            </div>
+            <div class="stat-value">0</div>
+            <div class="stat-label">Неактивных</div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header" style="background: linear-gradient(135deg, #ffb6e6, #ff99cc); color: white;">
+            <i class="fas fa-search me-2"></i> Поиск пользователей
+        </div>
+        <div class="card-body">
+            <div class="search-box">
+                <div class="input-group">
+                    <span class="input-group-text" style="background: #ffb6e6; border-color: #ff99cc;">
+                        <i class="fas fa-search" style="color: #ff3399;"></i>
+                    </span>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Поиск по имени или логину..." style="border-color: #ff99cc;">
+                    <button class="btn" type="button" onclick="searchUsers()" style="background: linear-gradient(135deg, #ff99cc, #ff66b2); color: white; border: none;">
+                        Найти
+                    </button>
+                </div>
+            </div>
+            
+            <div class="d-flex flex-wrap gap-2 justify-content-center mt-3">
+                <button class="btn btn-sm" onclick="filterUsers('all')" style="background: linear-gradient(135deg, #ffb6e6, #ff99cc); color: #ff3399; border: 1px solid #ff99cc;">
+                    Все пользователи
+                </button>
+                <button class="btn btn-sm" onclick="filterUsers('admin')" style="background: linear-gradient(135deg, #ff99ff, #cc66ff); color: #9933ff; border: 1px solid #cc66ff;">
+                    Только администраторы
+                </button>
+                <button class="btn btn-sm" onclick="filterUsers('user')" style="background: linear-gradient(135deg, #99ffcc, #66ffb2); color: #00cc66; border: 1px solid #66ffb2;">
+                    Только обычные пользователи
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #ffb6e6, #ff99cc); color: white;">
+            <div>
+                <i class="fas fa-list me-2"></i> Список пользователей
+                <span class="badge" style="background: linear-gradient(135deg, #ff99ff, #cc66ff);" id="userCount">{{ users|length }}</span>
+            </div>
+            <a href="#" class="btn btn-sm" style="background: linear-gradient(135deg, #ff66b2, #ff3399); color: white; border: none;">
+                <i class="fas fa-user-plus me-1"></i> Добавить пользователя
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table user-table mb-0">
+                    <thead>
+                        <tr>
+                            <th width="50">#</th>
+                            <th>Пользователь</th>
+                            <th>Логин</th>
+                            <th>Статус</th>
+                            <th>Отпусков</th>
+                            <th>Дата регистрации</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                        {% for user in users %}
+                            <tr class="user-row" 
+                                data-name="{{ user.name|lower }}" 
+                                data-username="{{ user.username|lower }}"
+                                data-admin="{{ 'yes' if user.is_admin else 'no' }}">
+                                <td>{{ loop.index }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar me-3">
+                                            {{ user.name[0] if user.name else 'U' }}
+                                        </div>
+                                        <div>
+                                            <strong>{{ user.name }}</strong>
+                                            {% if user.id == current_user.id %}
+                                                <span class="badge" style="background: linear-gradient(135deg, #99ccff, #66b2ff);">Вы</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@{{ user.username }}</td>
+                                <td>
+                                    <span class="badge {% if user.is_admin %}badge-admin{% else %}badge-user{% endif %}">
+                                        {% if user.is_admin %}
+                                            <i class="fas fa-crown me-1"></i> Администратор
+                                        {% else %}
+                                            <i class="fas fa-user me-1"></i> Пользователь
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% set user_vacations = namespace(count=0) %}
+                                    {% for vacation in user.vacations %}
+                                        {% set user_vacations.count = user_vacations.count + 1 %}
+                                    {% endfor %}
+                                    <span class="badge {% if user_vacations.count > 0 %}" style="background: linear-gradient(135deg, #99ffcc, #66ffb2);"{% else %}" style="background: linear-gradient(135deg, #ccccff, #9999ff);"{% endif %}>
+                                        {{ user_vacations.count }}
+                                    </span>
+                                </td>
+                                <td>{{ user.created_at.strftime('%d.%m.%Y') }}</td>
+                                <td>
+                                    <div class="user-actions">
+                                        <button class="action-btn edit" 
+                                                onclick="editUser({{ user.id }})">
+                                            <i class="fas fa-edit"></i> Изменить
+                                        </button>
+                                        
+                                        <button class="action-btn toggle-admin" 
+                                                onclick="toggleAdmin({{ user.id }}, {{ 'true' if user.is_admin else 'false' }})">
+                                            {% if user.is_admin %}
+                                                <i class="fas fa-user"></i> Снять админа
+                                            {% else %}
+                                                <i class="fas fa-crown"></i> Назначить админом
+                                            {% endif %}
+                                        </button>
+                                        
+                                        {% if user.id != current_user.id %}
+                                            <button class="action-btn delete" 
+                                                    onclick="deleteUser({{ user.id }}, '{{ user.name }}')">
+                                                <i class="fas fa-trash"></i> Удалить
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <nav aria-label="Навигация по страницам">
+            <ul class="pagination">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function searchUsers() {
+        const searchText = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('.user-row');
+        let visibleCount = 0;
+        
+        rows.forEach(row => {
+            const name = row.getAttribute('data-name');
+            const username = row.getAttribute('data-username');
+            
+            if (name.includes(searchText) || username.includes(searchText)) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('userCount').textContent = visibleCount;
+    }
+
+    function filterUsers(filter) {
+        const rows = document.querySelectorAll('.user-row');
+        let visibleCount = 0;
+        
+        rows.forEach(row => {
+            const isAdmin = row.getAttribute('data-admin');
+            
+            if (filter === 'all' || 
+                (filter === 'admin' && isAdmin === 'yes') ||
+                (filter === 'user' && isAdmin === 'no')) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('userCount').textContent = visibleCount;
+    }
+
+    function editUser(userId) {
+        alert(`Редактирование пользователя с ID: ${userId}\nЭта функция находится в разработке.`);
+    }
+
+    function toggleAdmin(userId, isAdmin) {
+        const action = isAdmin === 'true' ? 'снять админа' : 'назначить админом';
+        const userName = prompt(`Введите имя пользователя для подтверждения действия "${action}":`);
+        
+        if (userName) {
+            if (confirm(`Вы уверены, что хотите ${action} для пользователя?`)) {
+                alert(`Статус администратора изменен для пользователя с ID: ${userId}`);
+                location.reload(); 
+            }
+        }
+    }
+
+    function deleteUser(userId, userName) {
+        const confirmName = prompt(`Введите имя пользователя "${userName}" для подтверждения удаления:`);
+        
+        if (confirmName === userName) {
+            if (confirm(`Вы уверены, что хотите удалить пользователя "${userName}"? Все его отпуска также будут удалены.`)) {
+                alert(`Пользователь "${userName}" удален.`);
+                location.reload(); 
+            }
+        } else if (confirmName !== null) {
+            alert('Имя пользователя не совпадает! Удаление отменено.');
+        }
+    }
+
+    document.getElementById('searchInput').addEventListener('input', searchUsers);
+
+    document.querySelectorAll('.user-table th').forEach((th, index) => {
+        th.addEventListener('click', () => {
+            alert(`Сортировка по столбцу ${index + 1}\nЭта функция находится в разработке.`);
+        });
+    });
+</script>
+{% endblock %}

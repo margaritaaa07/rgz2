@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация | Планировщик отпусков{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i> Регистрация</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('register') }}">
+                        <div class="mb-4">
+                            <label for="name" class="form-label">Полное имя</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" id="name" name="name" 
+                                       placeholder="Иван Иванов" required>
+                            </div>
+                            <div class="form-text">Как к вам обращаться в системе</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="username" class="form-label">Логин</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-at"></i></span>
+                                <input type="text" class="form-control" id="username" name="username" 
+                                       placeholder="ivanov" required>
+                            </div>
+                            <div class="form-text">Уникальное имя для входа в систему</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Пароль</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" 
+                                       placeholder="Не менее 6 символов" required minlength="6">
+                            </div>
+                            <div class="form-text">Минимум 6 символов</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i> Зарегистрироваться
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <p class="mb-2">Уже есть аккаунт?</p>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i> Войти в систему
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    <h5><i class="fas fa-info-circle text-primary me-2"></i> Что после регистрации?</h5>
+                    <p class="mb-0 text-muted">
+                        После регистрации вы сможете войти в систему и выбрать 4 недели для отпуска в текущем году.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель - Планирование отпусков</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        body { padding-top: 20px; background-color: #f8f9fa; }
+        .navbar-brand { font-weight: bold; }
+        .admin-card { background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .stat-card { 
+            background: linear-gradient(135deg, #cb1181 0%, #ff4081 100%); 
+            color: white; 
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .stat-number { font-size: 2.5rem; font-weight: bold; }
+        .admin-nav { background-color: #343a40; padding: 15px; border-radius: 8px; }
+        .admin-nav a { color: white; text-decoration: none; display: block; padding: 10px; border-radius: 5px; }
+        .admin-nav a:hover { background-color: #495057; }
+        .admin-nav .active { background-color: #ff4081; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">📅 Планирование отпусков</a>
+            <div class="navbar-nav ms-auto">
+                <span class="nav-item nav-link">👑 Администратор: {{ current_user.name }}</span>
+                <a class="nav-item nav-link" href="/dashboard">Дашборд</a>
+                <a class="nav-item nav-link" href="/logout">Выйти</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="admin-nav">
+                    <h5 class="text-white mb-3"><i class="bi bi-gear"></i> Администрирование</h5>
+                    <a href="/admin" class="active"><i class="bi bi-speedometer2"></i> Панель управления</a>
+                    <a href="/admin/users"><i class="bi bi-people"></i> Пользователи</a>
+                    <a href="/admin/vacations"><i class="bi bi-calendar-week"></i> Отпуска</a>
+                    <a href="/admin/create_vacation"><i class="bi bi-plus-circle"></i> Создать отпуск</a>
+                    <a href="/admin/statistics"><i class="bi bi-graph-up"></i> Статистика</a>
+                    <hr class="bg-light">
+                    <a href="/dashboard"><i class="bi bi-arrow-left"></i> Назад к дашборду</a>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <div class="admin-card">
+                    <h2><i class="bi bi-speedometer2"></i> Панель управления администратора</h2>
+                    <p class="text-muted">Обзор системы планирования отпусков</p>
+
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <i class="bi bi-people fs-1"></i>
+                                <h4>Пользователи</h4>
+                                <div class="stat-number">{{ total_users }}</div>
+                                <small>Всего в системе</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                                <i class="bi bi-calendar-week fs-1"></i>
+                                <h4>Отпуска</h4>
+                                <div class="stat-number">{{ total_vacations }}</div>
+                                <small>Забронировано</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card" style="background: linear-gradient(135deg, #f46b45 0%, #eea849 100%);">
+                                <i class="bi bi-calendar fs-1"></i>
+                                <h4>Текущий год</h4>
+                                <div class="stat-number">{{ current_year }}</div>
+                                <small>Активный период</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card" style="background: linear-gradient(135deg, #834d9b 0%, #d04ed6 100%);">
+                                <i class="bi bi-clock-history fs-1"></i>
+                                <h4>Статус</h4>
+                                <div class="stat-number">
+                                    {% if total_users > 0 %}✅{% else %}❌{% endif %}
+                                </div>
+                                <small>Система активна</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h4><i class="bi bi-lightning"></i> Быстрые действия</h4>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-3">
+                                <a href="/admin/create_vacation" class="btn btn-success me-2">
+                                    <i class="bi bi-plus-circle"></i> Создать отпуск
+                                </a>
+                                <a href="/admin/users" class="btn btn-primary me-2">
+                                    <i class="bi bi-people"></i> Управление пользователями
+                                </a>
+                                <a href="/admin/statistics" class="btn btn-info me-2">
+                                    <i class="bi bi-graph-up"></i> Просмотр статистики
+                                </a>
+                                <a href="/admin/vacations?year={{ current_year }}" class="btn btn-warning">
+                                    <i class="bi bi-calendar-week"></i> Все отпуска
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-5">
+                        <div class="col-12">
+                            <h4><i class="bi bi-bar-chart"></i> Статистика по годам</h4>
+                            <div class="table-responsive mt-3">
+                                <table class="table table-striped">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Год</th>
+                                            <th>Количество отпусков</th>
+                                            <th>Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for stat in yearly_stats %}
+                                        <tr>
+                                            <td><strong>{{ stat.year }}</strong></td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ stat.count }}</span>
+                                                {% if stat.year == current_year %}
+                                                <span class="badge bg-success ms-2">Текущий</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="/admin/vacations?year={{ stat.year }}" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-eye"></i> Просмотр
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted">
+                                                <i class="bi bi-calendar-x fs-1"></i><br>
+                                                Нет данных об отпусках
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card bg-light">
+                                <div class="card-header">
+                                    <h5><i class="bi bi-info-circle"></i> Системная информация</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p><strong>Текущий администратор:</strong> {{ current_user.name }}</p>
+                                            <p><strong>Email:</strong> {{ current_user.email or 'Не указан' }}</p>
+                                            <p><strong>Отдел:</strong> {{ current_user.department }}</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong>Дата регистрации:</strong> {{ current_user.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
+                                            <p><strong>Статус:</strong> 
+                                                <span class="badge bg-success">Активен</span>
+                                            </p>
+                                            <p><strong>Права:</strong> 
+                                                <span class="badge bg-danger">Администратор</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <small class="text-muted">
+                                            <i class="bi bi-shield-check"></i> Вы вошли с правами администратора. 
+                                            Будьте осторожны при изменении данных.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    <div class="mt-4">
+                        {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    var bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

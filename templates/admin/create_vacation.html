@@ -1,0 +1,649 @@
+{% extends "base.html" %}
+
+{% block title %}🌸 Админ-панель - Создать отпуск{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #ffb6e6;
+    }
+
+    .page-title {
+        font-size: 28px;
+        color: #ff4081;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #ff4081;
+        text-decoration: none;
+        font-weight: 600;
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: 1px solid #ffb6e6;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .back-link:hover {
+        background: #fff0f8;
+        transform: translateX(-5px);
+    }
+
+    .form-container {
+        background: white;
+        border-radius: var(--radius);
+        padding: 30px;
+        box-shadow: var(--shadow);
+        border: 1px solid rgba(255, 64, 129, 0.1);
+        margin-bottom: 30px;
+    }
+
+    .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .form-section-title {
+        font-size: 20px;
+        color: #ff4081;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+        font-size: 15px;
+    }
+
+    .form-label.required::after {
+        content: '*';
+        color: #ff4081;
+        margin-left: 4px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: var(--radius-sm);
+        font-size: 15px;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #ff4081;
+        box-shadow: 0 0 0 3px rgba(255, 64, 129, 0.1);
+    }
+
+    .form-control.is-invalid {
+        border-color: #ef5350;
+        box-shadow: 0 0 0 3px rgba(239, 83, 80, 0.1);
+    }
+
+    .invalid-feedback {
+        color: #ef5350;
+        font-size: 13px;
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .form-text {
+        color: #666;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    .user-select-wrapper {
+        position: relative;
+    }
+
+    .user-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23ff4081' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 16px;
+        padding-right: 40px;
+    }
+
+    .year-week-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .week-info {
+        background: rgba(255, 182, 230, 0.1);
+        border-radius: var(--radius-sm);
+        padding: 15px;
+        margin-top: 15px;
+        border-left: 4px solid #ff4081;
+    }
+
+    .week-info h4 {
+        color: #ff4081;
+        margin-bottom: 10px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .week-info p {
+        margin: 5px 0;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .week-dates {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .date-item {
+        background: white;
+        border: 1px solid #ffb6e6;
+        border-radius: 6px;
+        padding: 8px;
+        text-align: center;
+        font-size: 13px;
+    }
+
+    .date-item .day {
+        color: #ff4081;
+        font-weight: 600;
+    }
+
+    .date-item .date {
+        color: #666;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+
+    .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #ff80ab, #ff4081);
+        color: white;
+        box-shadow: 0 4px 15px rgba(255, 64, 129, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 64, 129, 0.4);
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #666;
+        border: 1px solid #ddd;
+    }
+
+    .btn-secondary:hover {
+        background: #f5f5f5;
+        border-color: #ccc;
+    }
+
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: var(--radius-sm);
+        margin-bottom: 20px;
+        border-left: 4px solid;
+    }
+
+    .alert-success {
+        background: rgba(102, 187, 106, 0.1);
+        border-color: #66bb6a;
+        color: #2e7d32;
+    }
+
+    .alert-danger {
+        background: rgba(239, 83, 80, 0.1);
+        border-color: #ef5350;
+        color: #c62828;
+    }
+
+    .conflict-warning {
+        background: rgba(255, 193, 7, 0.1);
+        border: 1px solid #ffc107;
+        border-radius: var(--radius-sm);
+        padding: 15px;
+        margin-top: 15px;
+        display: none;
+    }
+
+    .conflict-warning.show {
+        display: block;
+    }
+
+    .conflict-list {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0 0 0;
+    }
+
+    .conflict-item {
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(255, 193, 7, 0.2);
+        font-size: 14px;
+    }
+
+    .conflict-item:last-child {
+        border-bottom: none;
+    }
+
+    .conflict-user {
+        color: #333;
+        font-weight: 600;
+    }
+
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+        .admin-container {
+            padding: 15px;
+        }
+
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .page-title {
+            font-size: 24px;
+        }
+
+        .form-container {
+            padding: 20px;
+        }
+
+        .year-week-container {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .week-dates {
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-title {
+            font-size: 20px;
+        }
+
+        .form-section-title {
+            font-size: 18px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="fas fa-calendar-plus"></i> Создать отпуск
+        </h1>
+        <a href="{{ url_for('admin_vacations') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Назад к отпускам
+        </a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category if category != 'error' else 'danger' }}">
+                    <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="form-container">
+        <form id="createVacationForm" method="POST" action="{{ url_for('admin_create_vacation') }}">
+            <div class="form-section">
+                <h3 class="form-section-title">
+                    <i class="fas fa-user"></i> Выбор сотрудника
+                </h3>
+                
+                <div class="form-group">
+                    <label for="user_id" class="form-label required">Сотрудник</label>
+                    <div class="user-select-wrapper">
+                        <select name="user_id" id="user_id" class="form-control user-select" required>
+                            <option value="">Выберите сотрудника</option>
+                            {% if users %}
+                                {% for user in users %}
+                                    <option value="{{ user.id }}" 
+                                            data-name="{{ user.name }}"
+                                            data-username="{{ user.username }}">
+                                        {{ user.name }} (@{{ user.username }}) {% if user.is_admin %}[👑 Админ]{% endif %}
+                                    </option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="form-text">Выберите сотрудника, для которого создается отпуск</div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="form-section-title">
+                    <i class="fas fa-calendar-alt"></i> Период отпуска
+                </h3>
+                
+                <div class="year-week-container">
+                    <div class="form-group">
+                        <label for="year" class="form-label required">Год</label>
+                        <select name="year" id="year" class="form-control" required>
+                            <option value="">Выберите год</option>
+                            {% set current_year = now.year if now else 2025 %}
+                            {% for y in range(current_year, current_year + 3) %}
+                                <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>
+                                    {{ y }} год
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="week_number" class="form-label required">Номер недели</label>
+                        <select name="week_number" id="week_number" class="form-control" required>
+                            <option value="">Выберите неделю</option>
+                            {% for week in range(1, 53) %}
+                                <option value="{{ week }}">Неделя {{ week }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div id="weekInfo" class="week-info" style="display: none;">
+                    <h4><i class="fas fa-info-circle"></i> Информация о неделе</h4>
+                    <p id="weekDatesText">Загрузка дат...</p>
+                    <div id="weekDates" class="week-dates"></div>
+                </div>
+
+                <div id="conflictWarning" class="conflict-warning">
+                    <h4 style="color: #ff9800; margin-bottom: 10px;">
+                        <i class="fas fa-exclamation-triangle"></i> Найдены возможные конфликты
+                    </h4>
+                    <p>У следующих сотрудников уже запланирован отпуск на эту неделю:</p>
+                    <ul id="conflictList" class="conflict-list"></ul>
+                    <p style="margin-top: 10px; font-size: 13px; color: #666;">
+                        Вы можете продолжить создание отпуска, но учтите, что в одной команде не рекомендуется одновременный отпуск нескольких сотрудников.
+                    </p>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="form-section-title">
+                    <i class="fas fa-comment-alt"></i> Дополнительная информация
+                </h3>
+                
+                <div class="form-group">
+                    <label for="comment" class="form-label">Комментарий</label>
+                    <textarea name="comment" id="comment" class="form-control" rows="4" 
+                              placeholder="Введите комментарий к отпуску (опционально)"></textarea>
+                    <div class="form-text">Максимум 500 символов</div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="reset" class="btn btn-secondary">
+                    <i class="fas fa-undo"></i> Очистить
+                </button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-save"></i> Создать отпуск
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const yearSelect = document.getElementById('year');
+        const weekSelect = document.getElementById('week_number');
+        const weekInfo = document.getElementById('weekInfo');
+        const weekDatesText = document.getElementById('weekDatesText');
+        const weekDates = document.getElementById('weekDates');
+        const conflictWarning = document.getElementById('conflictWarning');
+        const conflictList = document.getElementById('conflictList');
+        const submitBtn = document.getElementById('submitBtn');
+        const form = document.getElementById('createVacationForm');
+        let isLoading = false;
+
+        async function loadWeekDates(year, week) {
+            if (!year || !week) {
+                weekInfo.style.display = 'none';
+                return;
+            }
+
+            try {
+                weekInfo.style.display = 'block';
+                weekDatesText.innerHTML = 'Загрузка дат...';
+                weekDates.innerHTML = '';
+
+                const response = await fetch(`/api/week_dates/${year}/${week}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const data = await response.json();
+                
+                if (data.dates && data.dates.length > 0) {
+                    weekDatesText.innerHTML = `Даты: ${data.dates[0]} - ${data.dates[data.dates.length - 1]}`;
+
+                    weekDates.innerHTML = '';
+                    data.dates.forEach(dateStr => {
+                        const date = new Date(dateStr);
+                        const day = date.toLocaleDateString('ru-RU', { weekday: 'short' });
+                        const dateFormatted = date.toLocaleDateString('ru-RU');
+                        
+                        const dateItem = document.createElement('div');
+                        dateItem.className = 'date-item';
+                        dateItem.innerHTML = `
+                            <div class="day">${day}</div>
+                            <div class="date">${dateFormatted}</div>
+                        `;
+                        weekDates.appendChild(dateItem);
+                    });
+
+                    await checkConflicts(year, week);
+                }
+            } catch (error) {
+                console.error('Error loading week dates:', error);
+                weekDatesText.innerHTML = 'Не удалось загрузить даты недели';
+            }
+        }
+
+        async function checkConflicts(year, week) {
+            const userId = document.getElementById('user_id').value;
+            if (!userId) return;
+
+            try {
+                const response = await fetch(`/api/check_conflicts/${year}/${week}?user_id=${userId}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const data = await response.json();
+                
+                if (data.conflicts && data.conflicts.length > 0) {
+                    conflictWarning.classList.add('show');
+                    conflictList.innerHTML = '';
+                    
+                    data.conflicts.forEach(conflict => {
+                        const li = document.createElement('li');
+                        li.className = 'conflict-item';
+                        li.innerHTML = `
+                            <span class="conflict-user">${conflict.user_name}</span> 
+                            (${conflict.username})
+                        `;
+                        conflictList.appendChild(li);
+                    });
+                } else {
+                    conflictWarning.classList.remove('show');
+                }
+            } catch (error) {
+                console.error('Error checking conflicts:', error);
+                conflictWarning.classList.remove('show');
+            }
+        }
+
+        yearSelect.addEventListener('change', function() {
+            loadWeekDates(this.value, weekSelect.value);
+        });
+
+        weekSelect.addEventListener('change', function() {
+            loadWeekDates(yearSelect.value, this.value);
+        });
+
+        form.addEventListener('submit', async function(e) {
+            if (isLoading) {
+                e.preventDefault();
+                return;
+            }
+
+            const userId = document.getElementById('user_id').value;
+            const year = document.getElementById('year').value;
+            const week = document.getElementById('week_number').value;
+
+            if (!userId || !year || !week) {
+                e.preventDefault();
+                alert('Пожалуйста, заполните все обязательные поля');
+                return;
+            }
+
+            isLoading = true;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loading"></div> Создание...';
+
+            if (conflictWarning.classList.contains('show')) {
+                const confirmed = confirm('Найдены возможные конфликты. Вы уверены, что хотите создать отпуск?');
+                if (!confirmed) {
+                    isLoading = false;
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-save"></i> Создать отпуск';
+                    e.preventDefault();
+                    return;
+                }
+            }
+
+            const comment = document.getElementById('comment').value;
+            if (comment.length > 500) {
+                e.preventDefault();
+                alert('Комментарий не должен превышать 500 символов');
+                isLoading = false;
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> Создать отпуск';
+                return;
+            }
+
+        });
+
+        if (yearSelect.value && weekSelect.value) {
+            loadWeekDates(yearSelect.value, weekSelect.value);
+        }
+
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.required && !this.value) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+
+            input.addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+            });
+        });
+
+        form.addEventListener('reset', function() {
+            weekInfo.style.display = 'none';
+            conflictWarning.classList.remove('show');
+            inputs.forEach(input => input.classList.remove('is-invalid'));
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление отпусками - Админ-панель</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        body { padding-top: 20px; background-color: #f8f9fa; }
+        .navbar-brand { font-weight: bold; }
+        .vacation-card { background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .filter-box { background-color: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .badge-vacation { background-color: #d4edda; color: #155724; }
+        .table-hover tbody tr:hover { background-color: rgba(0, 123, 255, 0.05); }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/admin">📅 Админ-панель</a>
+            <div class="navbar-nav ms-auto">
+                <span class="nav-item nav-link">👑 {{ current_user.name }}</span>
+                <a class="nav-item nav-link" href="/admin">Главная</a>
+                <a class="nav-item nav-link" href="/dashboard">Дашборд</a>
+                <a class="nav-item nav-link" href="/logout">Выйти</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="vacation-card">
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <h2><i class="bi bi-calendar-week"></i> Управление отпусками</h2>
+                    <p class="text-muted">Просмотр и управление всеми отпусками сотрудников</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="/admin/create_vacation" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Создать отпуск
+                    </a>
+                    <a href="/admin" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left"></i> Назад
+                    </a>
+                </div>
+            </div>
+
+            <div class="filter-box">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <label for="yearSelect" class="form-label">Фильтр по году:</label>
+                        <select class="form-select" id="yearSelect" onchange="changeYear(this.value)">
+                            {% for y in range(2023, 2027) %}
+                            <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }} год</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="weekSelect" class="form-label">Фильтр по неделе:</label>
+                        <select class="form-select" id="weekSelect" onchange="filterByWeek(this.value)">
+                            <option value="0">Все недели</option>
+                            {% for w in range(1, 53) %}
+                            <option value="{{ w }}">Неделя {{ w }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="userSelect" class="form-label">Фильтр по сотруднику:</label>
+                        <select class="form-select" id="userSelect" onchange="filterByUser(this.value)">
+                            <option value="0">Все сотрудники</option>
+                            {% for user_id, user in users_dict.items() %}
+                            <option value="{{ user_id }}">{{ user.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Всего отпусков</h6>
+                            <h3 class="text-primary">{{ vacations|length }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Сотрудников с отпуском</h6>
+                            <h3 class="text-success">
+                                {% set unique_users = [] %}
+                                {% for vacation in vacations %}
+                                    {% if vacation.user_id not in unique_users %}
+                                        {% set _ = unique_users.append(vacation.user_id) %}
+                                    {% endif %}
+                                {% endfor %}
+                                {{ unique_users|length }}
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Недель забронировано</h6>
+                            <h3 class="text-warning">
+                                {% set total_weeks = [] %}
+                                {% for vacation in vacations %}
+                                    {% set _ = total_weeks.append(1) %}
+                                {% endfor %}
+                                {{ total_weeks|length }}
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Текущий год</h6>
+                            <h3 class="text-info">{{ current_year }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Сотрудник</th>
+                            <th>Неделя</th>
+                            <th>Год</th>
+                            <th>Дата отпуска</th>
+                            <th>Статус</th>
+                            <th>Создан</th>
+                            <th>Обновлен</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vacation in vacations %}
+                        <tr>
+                            <td><strong>#{{ vacation.id }}</strong></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if vacation.user_id in users_dict %}
+                                    <div class="me-2">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div>
+                                        <strong>{{ users_dict[vacation.user_id].name }}</strong><br>
+                                        <small class="text-muted">{{ users_dict[vacation.user_id].department }}</small>
+                                    </div>
+                                    {% else %}
+                                    <span class="text-danger">Пользователь удален</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-vacation p-2">
+                                    <i class="bi bi-calendar-week"></i> Неделя {{ vacation.week_number }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ vacation.year }}</span>
+                                {% if vacation.year == current_year %}
+                                <span class="badge bg-success">Текущий</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if vacation.year == current_year %}
+                                    {% set week_dates = get_week_dates(vacation.year, vacation.week_number) %}
+                                    {{ week_dates[0] }} - {{ week_dates[1] }}
+                                {% else %}
+                                    <span class="text-muted">Даты для {{ vacation.year }} года</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% set today = now %}
+                                {% set vacation_date = datetime(vacation.year, 1, 1) + timedelta(days=(vacation.week_number-1)*7) %}
+                                {% if vacation_date < today %}
+                                    <span class="badge bg-secondary">Прошедший</span>
+                                {% elif vacation_date.year == today.year and vacation_date.month == today.month %}
+                                    <span class="badge bg-warning">Текущий месяц</span>
+                                {% else %}
+                                    <span class="badge bg-success">Предстоящий</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>{{ vacation.created_at.strftime('%d.%m.%Y') }}</small><br>
+                                <small class="text-muted">{{ vacation.created_at.strftime('%H:%M') }}</small>
+                            </td>
+                            <td>
+                                {% if vacation.updated_at %}
+                                <small>{{ vacation.updated_at.strftime('%d.%m.%Y') }}</small><br>
+                                <small class="text-muted">{{ vacation.updated_at.strftime('%H:%M') }}</small>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="/admin/edit_vacation/{{ vacation.id }}" 
+                                       class="btn btn-sm btn-warning" 
+                                       title="Редактировать">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form method="POST" 
+                                          action="/admin/delete_vacation/{{ vacation.id }}" 
+                                          style="display: inline;"
+                                          onsubmit="return confirmDelete('{{ users_dict[vacation.user_id].name if vacation.user_id in users_dict else 'Неизвестный пользователь' }}', {{ vacation.week_number }}, {{ vacation.year }})">
+                                        <button type="submit" 
+                                                class="btn btn-sm btn-danger"
+                                                title="Удалить">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                    <a href="/api/vacations/{{ vacation.id }}/details" 
+                                       class="btn btn-sm btn-info"
+                                       title="Детали"
+                                       target="_blank">
+                                        <i class="bi bi-info-circle"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="bi bi-calendar-x fs-1"></i>
+                                    <h5 class="mt-3">Нет данных об отпусках</h5>
+                                    <p>На {{ current_year }} год отпуски еще не назначены</p>
+                                    <a href="/admin/create_vacation" class="btn btn-success mt-2">
+                                        <i class="bi bi-plus-circle"></i> Создать первый отпуск
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary" onclick="exportToCSV()">
+                            <i class="bi bi-file-earmark-excel"></i> Экспорт CSV
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="printTable()">
+                            <i class="bi bi-printer"></i> Печать
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="text-muted">
+                        Показано {{ vacations|length }} записей
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="mt-4">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    <i class="bi bi-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function changeYear(year) {
+            window.location.href = `/admin/vacations?year=${year}`;
+        }
+
+        function filterByWeek(week) {
+            if (week > 0) {
+                const rows = document.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const weekCell = row.querySelector('td:nth-child(3)');
+                    if (weekCell) {
+                        const weekText = weekCell.textContent;
+                        const weekNum = parseInt(weekText.match(/Неделя (\d+)/)?.[1]);
+                        if (weekNum === parseInt(week)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    }
+                });
+            } else {
+                const rows = document.querySelectorAll('tbody tr');
+                rows.forEach(row => row.style.display = '');
+            }
+        }
+
+        function filterByUser(userId) {
+            if (userId > 0) {
+                const rows = document.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const userCell = row.querySelector('td:nth-child(2)');
+                    if (userCell && userCell.textContent.includes(userId)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            } else {
+                const rows = document.querySelectorAll('tbody tr');
+                rows.forEach(row => row.style.display = '');
+            }
+        }
+
+        function confirmDelete(userName, weekNumber, year) {
+            return confirm(`Вы уверены, что хотите удалить отпуск для сотрудника ${userName} на неделю ${weekNumber} (${year} год)?`);
+        }
+
+        function exportToCSV() {
+            const year = document.getElementById('yearSelect').value;
+            window.open(`/export_schedule?year=${year}&format=csv`, '_blank');
+        }
+
+        function printTable() {
+            window.print();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

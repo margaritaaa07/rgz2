@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+*.db
+*.sqlite3
+.DS_Store
+Thumbs.db
+
+echo "venv/" > .gitignore
+echo "__pycache__/" >> .gitignore
+echo "*.pyc" >> .gitignore
+echo "instance/" >> .gitignore
+echo ".env" >> .gitignore
+echo ".pytest_cache/" >> .gitignore
