@@ -5,48 +5,55 @@
 {% block extra_css %}
 <style>
     .page-header {
-        background: linear-gradient(135deg, #ffb6e6 0%, #ff80d5 100%);
+        background: linear-gradient(135deg, #ff66b2 0%, #ff3399 100%);
         color: white;
         padding: 30px;
         border-radius: var(--radius);
         margin-bottom: 30px;
-        box-shadow: var(--shadow);
+        box-shadow: 0 8px 25px rgba(255, 102, 178, 0.2);
+        text-align: center;
     }
     
     .page-header h1 {
-        font-size: 32px;
+        font-size: 36px;
         margin-bottom: 10px;
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 15px;
+        font-weight: 800;
     }
     
     .page-header p {
-        font-size: 16px;
+        font-size: 18px;
         opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
     }
 
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 25px;
         margin-bottom: 40px;
     }
     
     .stat-card {
-        background: white;
-        border-radius: var(--radius);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 240, 248, 0.95));
+        border-radius: 20px;
         padding: 25px;
-        box-shadow: var(--shadow);
-        transition: var(--transition);
+        box-shadow: 0 6px 20px rgba(255, 102, 178, 0.15);
+        transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-        border: 1px solid rgba(255, 182, 230, 0.3);
+        border: 2px solid rgba(255, 182, 230, 0.4);
+        backdrop-filter: blur(10px);
     }
     
     .stat-card:hover {
-        transform: translateY(-10px);
-        box-shadow: var(--shadow-lg);
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 30px rgba(255, 102, 178, 0.25);
+        border-color: #ff99cc;
     }
     
     .stat-card::before {
@@ -55,23 +62,8 @@
         top: 0;
         left: 0;
         right: 0;
-        height: 5px;
-    }
-    
-    .stat-card.users::before {
-        background: linear-gradient(135deg, #ff99cc, #ff66b2);
-    }
-    
-    .stat-card.vacations::before {
-        background: linear-gradient(135deg, #ff99ff, #cc66ff);
-    }
-    
-    .stat-card.years::before {
-        background: linear-gradient(135deg, #ffcccc, #ff9999);
-    }
-    
-    .stat-card.weeks::before {
-        background: linear-gradient(135deg, #ffb6e6, #ff99cc);
+        height: 6px;
+        background: linear-gradient(135deg, #ff66b2, #ff3399);
     }
     
     .stat-header {
@@ -82,65 +74,43 @@
     }
     
     .stat-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 15px;
+        width: 70px;
+        height: 70px;
+        border-radius: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 24px;
-        box-shadow: 0 4px 15px rgba(255, 102, 178, 0.3);
-    }
-    
-    .stat-card.users .stat-icon {
-        background: linear-gradient(135deg, #ff99cc, #ff66b2);
-    }
-    
-    .stat-card.vacations .stat-icon {
-        background: linear-gradient(135deg, #ff99ff, #cc66ff);
-    }
-    
-    .stat-card.years .stat-icon {
-        background: linear-gradient(135deg, #ffcccc, #ff9999);
-    }
-    
-    .stat-card.weeks .stat-icon {
-        background: linear-gradient(135deg, #ffb6e6, #ff99cc);
+        font-size: 28px;
+        box-shadow: 0 6px 15px rgba(255, 102, 178, 0.4);
+        background: linear-gradient(135deg, #ff66b2, #ff3399);
     }
     
     .stat-value {
-        font-size: 36px;
-        font-weight: 700;
+        font-size: 42px;
+        font-weight: 800;
         margin-bottom: 5px;
-    }
-    
-    .stat-card.users .stat-value {
-        color: #ff66b2;
-    }
-    
-    .stat-card.vacations .stat-value {
-        color: #cc66ff;
-    }
-    
-    .stat-card.years .stat-value {
-        color: #ff9999;
-    }
-    
-    .stat-card.weeks .stat-value {
-        color: #ff99cc;
+        background: linear-gradient(135deg, #ff66b2, #ff3399);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
     
     .stat-label {
         font-size: 16px;
-        color: #666;
+        color: #ff66b2;
         margin-bottom: 15px;
+        font-weight: 600;
     }
     
     .stat-details {
         font-size: 14px;
-        color: #666;
+        color: #ff80bf;
         line-height: 1.6;
+        padding: 15px;
+        background: rgba(255, 240, 248, 0.7);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 182, 230, 0.3);
     }
 
     .tables-grid {
@@ -151,11 +121,12 @@
     }
     
     .table-card {
-        background: white;
-        border-radius: var(--radius);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 240, 248, 0.95));
+        border-radius: 20px;
         padding: 25px;
-        box-shadow: var(--shadow);
-        border: 1px solid rgba(255, 182, 230, 0.3);
+        box-shadow: 0 6px 20px rgba(255, 102, 178, 0.15);
+        border: 2px solid rgba(255, 182, 230, 0.4);
+        backdrop-filter: blur(10px);
     }
     
     .table-header {
@@ -164,15 +135,16 @@
         align-items: center;
         margin-bottom: 20px;
         padding-bottom: 15px;
-        border-bottom: 2px solid #ffe6f7;
+        border-bottom: 3px solid #ffb6e6;
     }
     
     .table-header h2 {
-        font-size: 20px;
-        color: #ff66b2;
+        font-size: 22px;
+        color: #ff3399;
         display: flex;
         align-items: center;
         gap: 10px;
+        font-weight: 700;
     }
     
     .table-container {
@@ -185,175 +157,215 @@
     }
     
     .stats-table th {
-        padding: 15px;
+        padding: 16px;
         text-align: left;
-        background: linear-gradient(135deg, rgba(255, 153, 204, 0.2), rgba(255, 102, 178, 0.1));
+        background: linear-gradient(135deg, rgba(255, 153, 204, 0.3), rgba(255, 102, 178, 0.2));
         color: #ff3399;
-        font-weight: 600;
-        font-size: 14px;
-        border-bottom: 2px solid #ffe6f7;
+        font-weight: 700;
+        font-size: 15px;
+        border-bottom: 3px solid #ffb6e6;
     }
     
     .stats-table td {
-        padding: 15px;
-        border-bottom: 1px solid #fff0f8;
+        padding: 16px;
+        border-bottom: 2px solid #ffe6f7;
         vertical-align: middle;
+        color: #ff66a3;
     }
     
     .stats-table tbody tr:hover {
-        background: linear-gradient(135deg, rgba(255, 153, 204, 0.1), rgba(255, 102, 178, 0.05));
-    }
-    
-    .stats-table tbody tr:last-child td {
-        border-bottom: none;
+        background: linear-gradient(135deg, rgba(255, 153, 204, 0.2), rgba(255, 102, 178, 0.1));
+        transform: scale(1.005);
+        transition: all 0.2s ease;
     }
 
     .progress-bar {
-        height: 10px;
+        height: 12px;
         background: #ffe6f7;
-        border-radius: 5px;
+        border-radius: 6px;
         overflow: hidden;
-        margin-top: 5px;
+        margin-top: 8px;
     }
     
     .progress-fill {
         height: 100%;
-        border-radius: 5px;
-    }
-    
-    .progress-fill.users {
+        border-radius: 6px;
         background: linear-gradient(135deg, #ff99cc, #ff66b2);
-    }
-    
-    .progress-fill.vacations {
-        background: linear-gradient(135deg, #ff99ff, #cc66ff);
+        box-shadow: 0 2px 8px rgba(255, 102, 178, 0.3);
     }
 
-    .charts-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-        gap: 30px;
-        margin-bottom: 40px;
-    }
-    
     .chart-card {
-        background: white;
-        border-radius: var(--radius);
-        padding: 25px;
-        box-shadow: var(--shadow);
-        border: 1px solid rgba(255, 182, 230, 0.3);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 240, 248, 0.95));
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 6px 20px rgba(255, 102, 178, 0.15);
+        border: 2px solid rgba(255, 182, 230, 0.4);
+        backdrop-filter: blur(10px);
+        margin-bottom: 30px;
     }
     
     .chart-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #ffb6e6;
     }
     
     .chart-header h2 {
-        font-size: 20px;
-        color: #ff66b2;
+        font-size: 22px;
+        color: #ff3399;
         display: flex;
         align-items: center;
         gap: 10px;
-    }
-    
-    .chart-container {
-        height: 300px;
-        position: relative;
-        margin-top: 20px;
+        font-weight: 700;
     }
 
     .week-distribution {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 15px;
+        gap: 12px;
+        margin-top: 20px;
+        justify-content: center;
     }
     
     .week-item {
         display: flex;
         align-items: center;
         gap: 8px;
-        padding: 8px 15px;
-        background: linear-gradient(135deg, rgba(255, 153, 204, 0.2), rgba(255, 102, 178, 0.1));
-        border-radius: 20px;
-        font-size: 14px;
+        padding: 10px 18px;
+        background: linear-gradient(135deg, rgba(255, 153, 204, 0.3), rgba(255, 102, 178, 0.2));
+        border-radius: 25px;
+        font-size: 15px;
         color: #ff3399;
-        border: 1px solid rgba(255, 153, 204, 0.3);
+        border: 2px solid rgba(255, 153, 204, 0.4);
         cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+    
+    .week-item:hover {
+        transform: translateY(-3px);
+        background: linear-gradient(135deg, #ff99cc, #ff66b2);
+        color: white;
+        border-color: #ff66b2;
+        box-shadow: 0 6px 15px rgba(255, 102, 178, 0.3);
     }
     
     .week-count {
-        font-weight: 600;
-        color: #ff66b2;
+        font-weight: 800;
+        color: #ff3399;
         background: white;
-        padding: 2px 8px;
-        border-radius: 10px;
-        border: 1px solid #ffe6f7;
+        padding: 4px 10px;
+        border-radius: 12px;
+        border: 2px solid #ffb6e6;
+        min-width: 30px;
+        text-align: center;
+    }
+    
+    .week-item:hover .week-count {
+        background: #ff3399;
+        color: white;
+        border-color: white;
     }
 
     .empty-state {
         text-align: center;
-        padding: 40px 20px;
-        color: #666;
+        padding: 50px 20px;
+        color: #ff99cc;
     }
     
     .empty-state i {
-        font-size: 48px;
-        margin-bottom: 15px;
-        color: #ffe6f7;
-        opacity: 0.5;
+        font-size: 60px;
+        margin-bottom: 20px;
+        color: #ffcce6;
+        opacity: 0.7;
     }
     
     .empty-state p {
-        font-size: 16px;
+        font-size: 18px;
+        color: #ff80bf;
+        font-weight: 600;
     }
 
     .export-actions {
         display: flex;
-        gap: 15px;
+        gap: 20px;
         justify-content: flex-end;
         margin-top: 30px;
-        padding: 20px;
-        background: white;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
+        padding: 25px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 240, 248, 0.95));
+        border-radius: 20px;
+        box-shadow: 0 6px 20px rgba(255, 102, 178, 0.15);
+        border: 2px solid rgba(255, 182, 230, 0.4);
+        backdrop-filter: blur(10px);
     }
     
     .btn-export {
-        padding: 12px 25px;
-        border-radius: var(--radius-sm);
-        font-weight: 600;
-        font-size: 14px;
-        transition: var(--transition);
+        padding: 14px 30px;
+        border-radius: 15px;
+        font-weight: 700;
+        font-size: 15px;
+        transition: all 0.3s ease;
         border: none;
         cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
     
     .btn-pdf {
-        background: linear-gradient(135deg, #ff9999, #ff6666);
+        background: linear-gradient(135deg, #ff6699, #ff3366);
         color: white;
     }
     
     .btn-pdf:hover {
-        background: linear-gradient(135deg, #ff6666, #ff3366);
-        transform: translateY(-2px);
+        background: linear-gradient(135deg, #ff3366, #ff0066);
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 8px 20px rgba(255, 51, 102, 0.4);
     }
     
     .btn-excel {
-        background: linear-gradient(135deg, #99ffcc, #66ffb2);
-        color: #006633;
+        background: linear-gradient(135deg, #ffb6e6, #ff99cc);
+        color: #ff3399;
     }
     
     .btn-excel:hover {
-        background: linear-gradient(135deg, #66ffb2, #33ff99);
-        transform: translateY(-2px);
+        background: linear-gradient(135deg, #ff99cc, #ff66b2);
+        color: white;
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 8px 20px rgba(255, 102, 178, 0.4);
+    }
+
+    .badge-status {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .badge-complete {
+        background: linear-gradient(135deg, rgba(255, 153, 204, 0.3), rgba(255, 102, 178, 0.2));
+        color: #ff3399;
+        border: 2px solid #ff99cc;
+    }
+    
+    .badge-pending {
+        background: linear-gradient(135deg, rgba(255, 204, 153, 0.3), rgba(255, 153, 102, 0.2));
+        color: #ff9933;
+        border: 2px solid #ffcc99;
+    }
+    
+    .badge-none {
+        background: linear-gradient(135deg, rgba(255, 153, 153, 0.3), rgba(255, 102, 102, 0.2));
+        color: #ff3333;
+        border: 2px solid #ff9999;
     }
 
     @media (max-width: 768px) {
@@ -371,6 +383,7 @@
         
         .export-actions {
             flex-direction: column;
+            text-align: center;
         }
         
         .page-header {
@@ -378,11 +391,15 @@
         }
         
         .page-header h1 {
-            font-size: 24px;
+            font-size: 28px;
         }
         
         .stat-value {
-            font-size: 28px;
+            font-size: 32px;
+        }
+        
+        .week-distribution {
+            justify-content: center;
         }
     }
 </style>
@@ -390,12 +407,12 @@
 
 {% block content %}
     <div class="page-header">
-        <h1><i class="fas fa-chart-bar"></i> Статистика системы</h1>
+        <h1><i class="fas fa-chart-pie"></i> Статистика системы</h1>
         <p>Детальный анализ использования системы планирования отпусков</p>
     </div>
 
     <div class="stats-grid">
-        <div class="stat-card users">
+        <div class="stat-card">
             <div class="stat-header">
                 <div class="stat-icon">
                     <i class="fas fa-users"></i>
@@ -406,14 +423,13 @@
             <div class="stat-details">
                 {% set admins_count = role_stats|selectattr('0', 'equalto', True)|map(attribute='1')|first|default(0) if role_stats is defined else 0 %}
                 {% set users_count = role_stats|selectattr('0', 'equalto', False)|map(attribute='1')|first|default(0) if role_stats is defined else 0 %}
-                {% set user_count = user_stats|length if user_stats is defined else 0 %}
                 • {{ admins_count }} администраторов<br>
                 • {{ users_count }} обычных пользователей<br>
-                • {{ ((admins_count / user_count) * 100)|round(1) if user_count > 0 else 0 }}% администраторов
+                • {{ ((admins_count / total_users) * 100)|round(1) if total_users > 0 else 0 }}% администраторов
             </div>
         </div>
         
-        <div class="stat-card vacations">
+        <div class="stat-card">
             <div class="stat-header">
                 <div class="stat-icon">
                     <i class="fas fa-umbrella-beach"></i>
@@ -428,7 +444,7 @@
             </div>
         </div>
         
-        <div class="stat-card years">
+        <div class="stat-card">
             <div class="stat-header">
                 <div class="stat-icon">
                     <i class="fas fa-calendar-alt"></i>
@@ -438,9 +454,12 @@
             <div class="stat-label">Лет активности</div>
             <div class="stat-details">
                 {% if vacations_by_year is defined and vacations_by_year|length > 0 %}
-                    • С {{ vacations_by_year|min(attribute='0')|first if vacations_by_year else 'Н/Д' }} по {{ vacations_by_year|max(attribute='0')|first if vacations_by_year else 'Н/Д' }} год<br>
-                    • {{ ((vacations_by_year|sum(attribute='1') / vacations_by_year|length)|round if vacations_by_year|length > 0 else 0) }} в среднем за год<br>
-                    • Самый активный: {{ vacations_by_year|max(attribute='1')|first if vacations_by_year else 'Н/Д' }} год
+                    {% set min_year = vacations_by_year|min(attribute='0')|first %}
+                    {% set max_year = vacations_by_year|max(attribute='0')|first %}
+                    • С {{ min_year }} по {{ max_year }} год<br>
+                    • {{ ((vacations_by_year|sum(attribute='1') / vacations_by_year|length)|round(1) if vacations_by_year|length > 0 else 0) }} в среднем за год<br>
+                    {% set max_year_data = vacations_by_year|max(attribute='1') %}
+                    • Самый активный: {{ max_year_data[0] if max_year_data else 'Н/Д' }} год
                 {% else %}
                     • Нет данных по годам<br>
                     • 0 в среднем за год<br>
@@ -449,7 +468,7 @@
             </div>
         </div>
         
-        <div class="stat-card weeks">
+        <div class="stat-card">
             <div class="stat-header">
                 <div class="stat-icon">
                     <i class="fas fa-calendar-week"></i>
@@ -459,7 +478,8 @@
             <div class="stat-label">Популярных недель</div>
             <div class="stat-details">
                 {% if popular_weeks is defined and popular_weeks|length > 0 %}
-                    • {{ popular_weeks|max(attribute='1')|last if popular_weeks else 0 }} отпусков на самой популярной неделе<br>
+                    {% set max_week = popular_weeks|max(attribute='1') %}
+                    • {{ max_week[1] if max_week else 0 }} отпусков на самой популярной неделе<br>
                     • {{ (week_stats|sum(attribute='1') / week_stats|length)|round(1) if week_stats is defined and week_stats|length > 0 else 0 }} в среднем на неделю<br>
                     • {{ (week_stats|length / 52 * 100)|round(1) if week_stats is defined and week_stats|length > 0 else 0 }}% недель занято
                 {% else %}
@@ -493,13 +513,12 @@
                         <tr>
                             <td><strong>{{ year_data[0] }}</strong></td>
                             <td>{{ year_data[1] }}</td>
-                            <td>{{ year_data[2] }}</td>
-                            <td>{{ (year_data[1] / year_data[2])|round(1) if year_data[2] > 0 else 0 }}</td>
+                            <td>{{ year_data[2] if year_data|length > 2 else 1 }}</td>
+                            <td>{{ (year_data[1] / (year_data[2] if year_data|length > 2 else 1))|round(1) }}</td>
                             <td>
                                 {% set max_vacations = vacations_by_year|max(attribute='1')|last if vacations_by_year|length > 0 else 1 %}
                                 <div class="progress-bar">
-                                    <div class="progress-fill vacations" 
-                                         style="width: {{ (year_data[1] / max_vacations * 100)|round }}%;"></div>
+                                    <div class="progress-fill" style="width: {{ (year_data[1] / max_vacations * 100)|round }}%;"></div>
                                 </div>
                             </td>
                         </tr>
@@ -537,8 +556,7 @@
                             <td>
                                 {% set max_count = popular_weeks|max(attribute='1')|last if popular_weeks|length > 0 else 1 %}
                                 <div class="progress-bar">
-                                    <div class="progress-fill users" 
-                                         style="width: {{ (week_data[1] / max_count * 100)|round }}%;"></div>
+                                    <div class="progress-fill" style="width: {{ (week_data[1] / max_count * 100)|round }}%;"></div>
                                 </div>
                             </td>
                         </tr>
@@ -572,15 +590,15 @@
             </div>
             
             {% if week_stats|length > 20 %}
-            <div style="margin-top: 10px; text-align: center;">
-                <span style="color: #666; font-size: 14px;">
+            <div style="margin-top: 15px; text-align: center;">
+                <span style="color: #ff80bf; font-size: 14px; font-weight: 600;">
                     ...и еще {{ week_stats|length - 20 }} недель
                 </span>
             </div>
             {% endif %}
             
-            <div style="margin-top: 20px; padding: 15px; background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(33, 150, 243, 0.05)); border-radius: 10px;">
-                <p style="font-size: 14px; color: #1976d2; margin: 0; display: flex; align-items: center; gap: 10px;">
+            <div style="margin-top: 25px; padding: 18px; background: linear-gradient(135deg, rgba(255, 153, 204, 0.2), rgba(255, 102, 178, 0.1)); border-radius: 15px; border: 2px solid rgba(255, 182, 230, 0.4);">
+                <p style="font-size: 15px; color: #ff3399; margin: 0; display: flex; align-items: center; gap: 12px;">
                     <i class="fas fa-chart-pie"></i>
                     <strong>Статистика:</strong> 
                     Занято {{ week_stats|length }} из 52 недель ({{ (week_stats|length / 52 * 100)|round(1) }}%). 
@@ -616,11 +634,11 @@
                         <tr>
                             <td>
                                 {% if role_data[0] %}
-                                    <span style="color: #ff4081; font-weight: 600;">
+                                    <span style="color: #ff0066; font-weight: 800;">
                                         <i class="fas fa-crown"></i> Администраторы
                                     </span>
                                 {% else %}
-                                    <span style="color: #2196f3; font-weight: 600;">
+                                    <span style="color: #ff66b2; font-weight: 800;">
                                         <i class="fas fa-user"></i> Пользователи
                                     </span>
                                 {% endif %}
@@ -659,27 +677,27 @@
                         {% for user in user_stats|sort(attribute='1', reverse=True)|slice(5) %}
                         <tr>
                             <td>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <div style="width: 30px; height: 30px; background: linear-gradient(135deg, #ff80ab, #ff4081); border-radius: 50%; 
-                                                display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #ff66b2, #ff3399); border-radius: 50%; 
+                                                display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 16px;">
                                         {{ user[0][0] if user[0] and user[0]|length > 0 else 'U' }}
                                     </div>
-                                    <span style="font-weight: 600;">{{ user[0] if user[0] else 'Неизвестный' }}</span>
+                                    <span style="font-weight: 700; color: #ff3399;">{{ user[0] if user[0] else 'Неизвестный' }}</span>
                                 </div>
                             </td>
-                            <td><strong>{{ user[1] if user[1] is defined else 0 }}</strong></td>
+                            <td><strong style="color: #ff0066; font-size: 18px;">{{ user[1] if user[1] is defined else 0 }}</strong></td>
                             <td>
                                 {% set user_vacations = user[1] if user[1] is defined else 0 %}
                                 {% if user_vacations >= 4 %}
-                                    <span style="color: #4caf50; font-weight: 600;">
+                                    <span class="badge-status badge-complete">
                                         <i class="fas fa-check-circle"></i> Выбрано максимум
                                     </span>
                                 {% elif user_vacations > 0 %}
-                                    <span style="color: #ff9800; font-weight: 600;">
+                                    <span class="badge-status badge-pending">
                                         <i class="fas fa-clock"></i> {{ 4 - user_vacations }} осталось
                                     </span>
                                 {% else %}
-                                    <span style="color: #f44336; font-weight: 600;">
+                                    <span class="badge-status badge-none">
                                         <i class="fas fa-times-circle"></i> Нет отпусков
                                     </span>
                                 {% endif %}
@@ -700,10 +718,10 @@
 
     <div class="export-actions">
         <div style="flex: 1;">
-            <h3 style="color: #2196f3; margin-bottom: 10px;">
+            <h3 style="color: #ff3399; margin-bottom: 12px;">
                 <i class="fas fa-download"></i> Экспорт данных
             </h3>
-            <p style="color: var(--gray-dark); font-size: 14px;">
+            <p style="color: #ff80bf; font-size: 15px; font-weight: 600;">
                 Скачайте полную статистику в удобном формате
             </p>
         </div>
@@ -723,23 +741,21 @@
     document.addEventListener('DOMContentLoaded', function() {
         const cards = document.querySelectorAll('.stat-card, .table-card, .chart-card');
         cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px) scale(0.95)';
+            
             setTimeout(() => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                card.style.transition = 'all 0.5s ease-out';
-                
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, 50);
+                card.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0) scale(1)';
             }, index * 100);
         });
 
         const tableRows = document.querySelectorAll('.stats-table tbody tr');
         tableRows.forEach(row => {
             row.addEventListener('mouseenter', function() {
-                this.style.transform = 'scale(1.01)';
-                this.style.boxShadow = '0 5px 15px rgba(33, 150, 243, 0.1)';
+                this.style.transform = 'scale(1.02)';
+                this.style.boxShadow = '0 8px 20px rgba(255, 102, 178, 0.2)';
             });
             
             row.addEventListener('mouseleave', function() {
@@ -753,7 +769,21 @@
             item.addEventListener('click', function() {
                 const weekNumber = this.querySelector('span:nth-child(2)').textContent.replace('Неделя ', '');
                 const count = this.querySelector('.week-count').textContent;
-                alert(`Неделя ${weekNumber}: ${count} отпусков`);
+                Swal.fire({
+                    title: `Неделя ${weekNumber}`,
+                    text: `На этой неделе запланировано ${count} отпусков`,
+                    icon: 'info',
+                    background: '#fff0f8',
+                    color: '#ff3399',
+                    confirmButtonColor: '#ff66b2',
+                    confirmButtonText: 'ОК',
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                });
             });
         });
     });
